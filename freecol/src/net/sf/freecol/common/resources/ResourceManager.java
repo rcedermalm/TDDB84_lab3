@@ -236,15 +236,17 @@ public class ResourceManager {
         logger.finest("hasResource(" + key + ")");
         return mergedContainer.containsKey(key);
     }
-
+    
+    // Could be replaced with hasResource() if we want to change in a LARGE part of the code
     public static synchronized boolean hasImageResource(final String key) {
         //logger.finest("hasImageResource(" + key + ")");
-        return mergedContainer.containsImageKey(key);
+        return mergedContainer.containsKey(key);
     }
 
+    // Could be replaced with hasResource() if we want to change in a LARGE part of the code
     public static synchronized boolean hasColorResource(final String key) {
         //logger.finest("hasColorResource(" + key + ")");
-        return mergedContainer.containsColorKey(key);
+        return mergedContainer.containsKey(key);
     }
 
     public static synchronized Map<String, Resource> getResources() {
@@ -265,7 +267,7 @@ public class ResourceManager {
      */
     public static synchronized List<String> getImageKeys(String prefix) {
         //logger.finest("getImageKeys(" + prefix + ")");
-        return mergedContainer.getImageKeys(prefix);
+        return mergedContainer.getKeys(prefix);
     }
 
     /**
@@ -279,7 +281,7 @@ public class ResourceManager {
     public static synchronized List<String> getImageKeys(String prefix,
                                                               String suffix) {
         logger.finest("getImageKeys(" + prefix + ", " + suffix + ")");
-        return mergedContainer.getImageKeys(prefix, suffix);
+        return mergedContainer.getKeys(prefix, suffix);
     }
 
     /**
@@ -290,81 +292,26 @@ public class ResourceManager {
      */
     public static synchronized Set<String> getImageKeySet(String prefix) {
         //logger.finest("getImageKeySet(" + prefix + ")");
-        return mergedContainer.getImageKeySet(prefix);
+        return mergedContainer.getKeySet(prefix);
     }
 
     /**
-     * Gets the resource of the given type.
+     * Gets the image resource.
      *
-     * @param key The resource to get.
-     * @return The resource if there is one with the given
+     * @param key The image resource to get.
+     * @return The image resource if there is one with the given
      *     resource key and type, or else <code>null</code>.
      */
-    private static synchronized ColorResource getColorResource(final String key) {
-        final ColorResource r = mergedContainer.getColorResource(key);
-        if (r == null) {
-            logger.warning("getColorResource(" + key + ") failed");
-        }
-        return r;
-    }
-
-    private static synchronized FontResource getFontResource(final String key) {
-        final FontResource r = mergedContainer.getFontResource(key);
-        if (r == null) {
-            logger.warning("getFontResource(" + key + ") failed");
-        }
-        return r;
-    }
-
-    private static synchronized StringResource getStringResource(final String key) {
-        final StringResource r = mergedContainer.getStringResource(key);
-        if (r == null) {
-            logger.warning("getStringResource(" + key + ") failed");
-        }
-        return r;
-    }
-
-    private static synchronized FAFileResource getFAFileResource(final String key) {
-        final FAFileResource r = mergedContainer.getFAFileResource(key);
-        if (r == null) {
-            logger.warning("getFAFileResource(" + key + ") failed");
-        }
-        return r;
-    }
-
-    private static synchronized SZAResource getSZAResource(final String key) {
-        final SZAResource r = mergedContainer.getSZAResource(key);
-        if (r == null) {
-            logger.warning("getSZAResource(" + key + ") failed");
-        }
-        return r;
-    }
-
-    private static synchronized AudioResource getAudioResource(final String key) {
-        final AudioResource r = mergedContainer.getAudioResource(key);
-        if (r == null) {
-            logger.warning("getAudioResource(" + key + ") failed");
-        }
-        return r;
-    }
-
-    private static synchronized VideoResource getVideoResource(final String key) {
-        final VideoResource r = mergedContainer.getVideoResource(key);
-        if (r == null) {
-            logger.warning("getVideoResource(" + key + ") failed");
-        }
-        return r;
-    }
-
     private static synchronized ImageResource getImageResource(final String key) {
-        ImageResource r = mergedContainer.getImageResource(key);
+        ImageResource r = (ImageResource) mergedContainer.getResource(key);
         if (r == null) {
             logger.warning("getImageResource(" + key + ") failed");
-            r = mergedContainer.getImageResource(REPLACEMENT_IMAGE);
+            r = (ImageResource) mergedContainer.getResource(REPLACEMENT_IMAGE);
             if(r == null) {
                 FreeColClient.fatal("Failed getting replacement image.");
             }
         }
+
         return r;
     }
 
@@ -380,6 +327,7 @@ public class ResourceManager {
      */
     public static BufferedImage getImage(final String key) {
         BufferedImage image = getImageResource(key).getImage();
+
         if(image == null) {
             logger.warning("getImage(" + key + ") failed");
             image = getImageResource(REPLACEMENT_IMAGE).getImage();
@@ -491,7 +439,7 @@ public class ResourceManager {
      *      identified by that name.
      */
     public static SimpleZippedAnimation getSimpleZippedAnimation(final String key) {
-        final SZAResource r = getSZAResource(key);
+        final SZAResource r = (SZAResource) mergedContainer.getResource(key);
         return (r != null) ? r.getSimpleZippedAnimation() : null;
     }
 
@@ -507,7 +455,7 @@ public class ResourceManager {
      *      identified by that name.
      */
     public static SimpleZippedAnimation getSimpleZippedAnimation(final String key, final float scale) {
-        final SZAResource r = getSZAResource(key);
+        final SZAResource r = (SZAResource) mergedContainer.getResource(key);
         return (r != null) ? r.getSimpleZippedAnimation(scale) : null;
     }
 
@@ -522,8 +470,8 @@ public class ResourceManager {
      *      a replacement color if there is no color identified
      *      by that name.
      */
-    public static Color getColor(final String key) {
-        final ColorResource r = getColorResource(key);
+    public static Color getColor(final String key) {        
+        final ColorResource r = (ColorResource) mergedContainer.getResource(key);  
         return (r == null) ? ColorResource.REPLACEMENT_COLOR : r.getColor();
     }
 
@@ -538,7 +486,7 @@ public class ResourceManager {
      *     to load.
      */
     public static Font getFont(final String key) {
-        final FontResource r = getFontResource(key);
+        final FontResource r = (FontResource) mergedContainer.getResource(key);       
         if (r == null) return FontResource.getEmergencyFont();
         return r.getFont();
     }
@@ -554,7 +502,7 @@ public class ResourceManager {
      * @return A <code>File</code> containing the audio data.
      */
     public static File getAudio(final String key) {
-        final AudioResource r = getAudioResource(key);
+        final AudioResource r = (AudioResource) mergedContainer.getResource(key);;
         return (r == null) ? null : r.getAudio();
     }
 
@@ -567,7 +515,7 @@ public class ResourceManager {
      * @return The <code>Video</code> in it's original size.
      */
     public static Video getVideo(final String key) {
-        final VideoResource r = getVideoResource(key);
+        final VideoResource r = (VideoResource) mergedContainer.getResource(key);
         return (r != null) ? r.getVideo() : null;
     }
 
@@ -580,7 +528,7 @@ public class ResourceManager {
      * @return The <code>FAFile</code> found in a FAFileResource.
      */
     public static FAFile getFAFile(final String key) {
-        final FAFileResource r = getFAFileResource(key);
+        final FAFileResource r = (FAFileResource) mergedContainer.getResource(key);
         return (r == null) ? null : r.getFAFile();
     }
 
@@ -593,8 +541,8 @@ public class ResourceManager {
      * @return The string value.
      */
     public static String getString(final String key) {
-        final StringResource r = getStringResource(key);
-        return (r == null) ? REPLACEMENT_STRING : r.getString();
+    	final StringResource r = (StringResource) mergedContainer.getResource(key);
+    	return (r == null) ? REPLACEMENT_STRING : r.getString();
     }
 
 }
