@@ -53,7 +53,8 @@ public class SZAResource extends Resource implements Resource.Preloadable {
         super(resourceLocator);
     }
 
-
+    protected SZAResource() {}
+    
     /**
      * Preloading the animation.
      */
@@ -111,4 +112,15 @@ public class SZAResource extends Resource implements Resource.Preloadable {
         scaledSzAnimations.put(scale, scaledVersion);
         return scaledVersion;
     }
+
+	@Override
+	public boolean satisfiesURI(URI uri) {
+		return (!"urn".equals(uri.getScheme())
+				&& uri.getPath().endsWith(".sza"));
+	}
+
+	@Override
+	public void initializeResource(URI uri) {
+		this.setResourceLocator(uri);
+	}
 }

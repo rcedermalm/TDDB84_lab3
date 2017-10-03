@@ -20,6 +20,7 @@
 package net.sf.freecol.common.resources;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +32,19 @@ import java.util.logging.Logger;
 public class ResourceFactory {
 
     private static final Logger logger = Logger.getLogger(ResourceFactory.class.getName());
+    
+    private static ArrayList<Resource> prototypes = new ArrayList<>();
+    
+    static {
+    	prototypes.add(new ColorResource());
+    	prototypes.add(new FontResource());
+    	prototypes.add(new StringResource());
+    	prototypes.add(new FAFileResource());
+    	prototypes.add(new SZAResource());
+    	prototypes.add(new AudioResource());
+    	prototypes.add(new VideoResource());
+    	prototypes.add(new ImageResource());
+    }
 
     /**
      * Returns an instance of <code>Resource</code> with the
@@ -45,52 +59,20 @@ public class ResourceFactory {
     public static void createResource(URI uri, ResourceMapping rm, String key) {
     	if(rm.containsKey(key))
             return;
-
-        try {
-            if ("urn".equals(uri.getScheme())) {
-                if (uri.getSchemeSpecificPart().startsWith(ColorResource.SCHEME)) {
-                    ColorResource resource = new ColorResource(uri);
-                    rm.add(key, resource);
-                } else if (uri.getSchemeSpecificPart().startsWith(FontResource.SCHEME)) {
-                    FontResource resource = new FontResource(uri);
-                    rm.add(key, resource);
-
-                }
-            } else if (uri.getPath().endsWith("\"")
-                    && uri.getPath().lastIndexOf('"',
-                            uri.getPath().length()-1) >= 0) {
-                StringResource resource = new StringResource(uri);
-                rm.add(key, resource);
-            } else if (uri.getPath().endsWith(".faf")) {
-                FAFileResource resource = new FAFileResource(uri);
-                rm.add(key, resource);
-            } else if (uri.getPath().endsWith(".sza")) {
-                SZAResource resource = new SZAResource(uri);
-                rm.add(key, resource);
-
-            } else if (uri.getPath().endsWith(".ttf")) {
-                FontResource resource  = new FontResource(uri);
-                rm.add(key, resource);
-            } else if (uri.getPath().endsWith(".wav")) {
-                AudioResource resource = new AudioResource(uri);
-                rm.add(key, resource);
-            } else if (uri.getPath().endsWith(".ogg")) {
-                if (uri.getPath().endsWith(".video.ogg")) {
-                    VideoResource resource = new VideoResource(uri);
-                    rm.add(key, resource);
-                } else {
-                    AudioResource resource = new AudioResource(uri);
-                    rm.add(key, resource);
-                }
-            } else {
-                ImageResource resource = new ImageResource(uri);
-                rm.add(key, resource);
-            }
-            
-
+        try {     
+        	for(Resource r : prototypes) {
+        		if(r.satisfiesURI(uri)) {      			
+        			Resource newResource = r.clone();
+        			newResource.initializeResource(uri);
+        			rm.add(key, newResource);
+        			break;
+        		}
+        	} 
         } catch (Exception e) {
             logger.log(Level.WARNING, "Failed to create resource with URI: " + uri, e);
         }
     }
 
 }
+
+

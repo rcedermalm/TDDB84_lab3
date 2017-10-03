@@ -31,12 +31,14 @@ import java.net.URL;
  */
 public class FAFileResource extends Resource {
 
-    private final FAFile FAFile;
+    private FAFile FAFile;
 
 
     public FAFileResource(FAFile FAFile) {
         this.FAFile = FAFile;
     }
+    
+    protected FAFileResource() {}
 
 
     /**
@@ -61,4 +63,23 @@ public class FAFileResource extends Resource {
     public FAFile getFAFile() {
         return FAFile;
     }
+
+	@Override
+	public boolean satisfiesURI(URI uri) {
+		return (!"urn".equals(uri.getScheme())
+				&& uri.getPath().endsWith(".faf"));
+	}
+
+	@Override
+	public void initializeResource(URI uri){
+		this.setResourceLocator(uri);
+        URL url;
+		try {
+			url = uri.toURL();
+			FAFile = new FAFile(url.openStream());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

@@ -19,6 +19,7 @@
 
 package net.sf.freecol.common.resources;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 
 
@@ -30,7 +31,7 @@ import java.net.URI;
  */
 public class VideoResource extends Resource {
 
-    private final Video video;
+    private Video video;
 
     
     /**
@@ -44,7 +45,8 @@ public class VideoResource extends Resource {
         
         this.video = new Video(resourceLocator.toURL());
     }
-
+    
+    protected VideoResource() {}
 
     /**
      * Gets the <code>Video</code> represented by this resource.
@@ -54,4 +56,23 @@ public class VideoResource extends Resource {
     public Video getVideo() {
         return this.video;
     }
+
+
+	@Override
+	public boolean satisfiesURI(URI uri) {
+		return (!"urn".equals(uri.getScheme())
+				&& uri.getPath().endsWith(".ogg") && uri.getPath().endsWith(".video.ogg"));
+	}
+
+
+	@Override
+	public void initializeResource(URI uri) {
+		this.setResourceLocator(uri);
+        try {
+			this.video = new Video(uri.toURL());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }

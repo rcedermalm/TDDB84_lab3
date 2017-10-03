@@ -45,6 +45,8 @@ public class FontResource extends Resource {
     public FontResource(Font font) {
         this.font = font;
     }
+    
+    protected FontResource() {}
 
     /**
      * Do not use directly.
@@ -107,4 +109,38 @@ public class FontResource extends Resource {
         logger.warning("Using emergency font");
         return Font.decode(null);
     }
+
+	@Override
+	public boolean satisfiesURI(URI uri) {
+        return (("urn".equals(uri.getScheme()) && uri.getSchemeSpecificPart().startsWith(FontResource.SCHEME)) ||
+        		(!("urn".equals(uri.getScheme())) && uri.getPath().endsWith(".ttf"))); 
+	}
+
+	@Override
+	public void initializeResource(URI uri) {
+		this.setResourceLocator(uri);
+		font = null;
+        try {
+            if (uri.getPath() != null
+                && uri.getPath().endsWith(".ttf")) {
+                URL url = uri.toURL();
+                font = Font.createFont(Font.TRUETYPE_FONT, url.openStream());
+            } else {
+                String name = uri.getSchemeSpecificPart();
+                font = Font.decode(name.substring(SCHEME.length()));
+            }
+
+            if (font != null) {
+                GraphicsEnvironment.getLocalGraphicsEnvironment()
+                    .registerFont(font);
+            }
+
+            logger.info("Loaded font: " + font.getFontName()
+                + " from: " + uri);
+        } catch(Exception e) {
+            logger.log(Level.WARNING,
+                "Failed loading font from: " + uri, e);
+        }
+		
+	}
 }

@@ -38,6 +38,8 @@ public class AudioResource extends Resource {
     public AudioResource(File file) {
         this.file = file;
     }
+    
+    protected AudioResource() {}
 
     /**
      * Do not use directly.
@@ -60,4 +62,21 @@ public class AudioResource extends Resource {
     public File getAudio() {
         return file;
     }
+
+	@Override
+	public boolean satisfiesURI(URI uri) {
+		return (!"urn".equals(uri.getScheme()) && uri.getPath().endsWith(".wav") || 
+				(uri.getPath().endsWith(".ogg") && !uri.getPath().endsWith(".video.ogg")));
+	}
+
+	@Override
+	public void initializeResource(URI uri){
+		this.setResourceLocator(uri);
+        File f = new File(uri);
+		try {
+			if (SoundPlayer.getAudioInputStream(f) != null) this.file = f;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

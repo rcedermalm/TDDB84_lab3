@@ -60,7 +60,8 @@ public class ImageResource extends Resource
         super(resourceLocator);
     }
 
-
+    protected ImageResource() {}
+    
     /**
      * Preload the image.
      */
@@ -224,4 +225,19 @@ public class ImageResource extends Resource
     public int getCount() {
         return grayscaleImages.size() + scaledImages.size();
     }
+
+	@Override
+	public boolean satisfiesURI(URI uri) {
+		return !"urn".equals(uri.getScheme())
+				&& !uri.getPath().endsWith(".faf")
+				&& !uri.getPath().endsWith(".sza")
+				&& !uri.getPath().endsWith(".ttf")
+				&& !uri.getPath().endsWith(".wav")
+				&& !uri.getPath().endsWith(".ogg");
+	}
+
+	@Override
+	public void initializeResource(URI uri) {
+		this.setResourceLocator(uri);
+	}
 }

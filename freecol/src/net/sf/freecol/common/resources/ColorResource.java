@@ -40,12 +40,14 @@ public class ColorResource extends Resource {
 
     public static final String SCHEME = "color:";
 
-    private final Color color;
+    private Color color;
 
 
     public ColorResource(Color color) {
         this.color = color;
     }
+    
+    protected ColorResource(){}
 
     /**
      * Do not use directly.
@@ -114,4 +116,19 @@ public class ColorResource extends Resource {
         // can cause crashes.
         return REPLACEMENT_COLOR;
     }
+
+	@Override
+	public boolean satisfiesURI(URI uri) {
+        return ("urn".equals(uri.getScheme()) && 
+        		uri.getSchemeSpecificPart().startsWith(ColorResource.SCHEME));
+	}
+
+	@Override
+	public void initializeResource(URI uri) {
+		this.setResourceLocator(uri);
+		String colorName = uri.getSchemeSpecificPart()
+		            .substring(SCHEME.length());
+		        this.color = getColor(colorName);
+		
+	}
 }

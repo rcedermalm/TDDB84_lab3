@@ -28,7 +28,7 @@ import java.net.URI;
  * <code>Resource</code> having the same (as in URI's equals, not the
  * identity) <code>URI</code>.
  */
-public abstract class Resource {
+public abstract class Resource implements Cloneable{
 
     /**
      * Implement the Preloadable interface if a Resource has a use for
@@ -60,7 +60,7 @@ public abstract class Resource {
     /**
      * The <code>URI</code> used when loading this resource.
      */
-    private final URI resourceLocator;
+    private URI resourceLocator;
 
 
     protected Resource() {
@@ -87,4 +87,32 @@ public abstract class Resource {
     public URI getResourceLocator() {
         return resourceLocator;
     }
+    
+    /**
+     * Returns the <code>URI</code> used for loading the resource.
+     * @return The <code>URI</code>.
+     */
+    protected void setResourceLocator(URI uri) {
+        this.resourceLocator = uri;
+    }
+    
+
+	public Resource clone() throws CloneNotSupportedException {
+		return (Resource) super.clone();
+	}
+    
+    /**
+     * Checks if the given <code>URI</code> satisfies the requirements for
+     * the subclass 
+     * @param uri The <code>URI</code> to check
+     * @return true if the <code>URI</code> matches, else false
+     */
+    public abstract boolean satisfiesURI(URI uri);
+    
+    /**
+     * Initializes the object with the given <code>URI</code>
+     * @param uri The <code>URI</code> to initialize the object with
+     */
+    public abstract void initializeResource(URI uri);
+    
 }
