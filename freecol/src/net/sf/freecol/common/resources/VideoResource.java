@@ -41,9 +41,7 @@ public class VideoResource extends Resource {
      *     resource.
      */
     public VideoResource(URI resourceLocator) throws Exception {
-        super(resourceLocator);
-        
-        this.video = new Video(resourceLocator.toURL());
+    	this.initializeResource(resourceLocator);
     }
     
     protected VideoResource() {}

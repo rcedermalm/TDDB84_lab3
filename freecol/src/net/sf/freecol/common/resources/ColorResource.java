@@ -56,11 +56,7 @@ public class ColorResource extends Resource {
      *     resource.
      */
     public ColorResource(URI resourceLocator) throws Exception {
-        super(resourceLocator);
-
-        String colorName = resourceLocator.getSchemeSpecificPart()
-            .substring(SCHEME.length());
-        this.color = getColor(colorName);
+    	this.initializeResource(resourceLocator);
     }
 
 

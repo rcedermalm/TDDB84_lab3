@@ -37,16 +37,7 @@ public class StringResource extends Resource {
      *      resource.
      */
     public StringResource(URI resourceLocator) {
-        super(resourceLocator);
-
-        this.data = resourceLocator.getPath();
-        if (this.data.endsWith("\"")) { // Should always be true
-            this.data = this.data.substring(0, this.data.length()-1);
-        }
-        int idx = this.data.lastIndexOf('"');
-        if (idx > 0) {
-            this.data = this.data.substring(idx+1);
-        }
+    	this.initializeResource(resourceLocator);
     }
     
     protected StringResource() {}

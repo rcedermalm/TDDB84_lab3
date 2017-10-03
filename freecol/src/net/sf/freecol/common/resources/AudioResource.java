@@ -48,9 +48,7 @@ public class AudioResource extends Resource {
      * @throws Exception of assorted types from the underlying audio components
      */
     public AudioResource(URI resourceLocator) throws Exception {
-        super(resourceLocator);
-        File f = new File(resourceLocator);
-        if (SoundPlayer.getAudioInputStream(f) != null) this.file = f;
+    	this.initializeResource(resourceLocator);
     }
 
 

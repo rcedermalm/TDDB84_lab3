@@ -57,7 +57,7 @@ public class ImageResource extends Resource
      *      resource.
      */
     public ImageResource(URI resourceLocator) {
-        super(resourceLocator);
+    	this.initializeResource(resourceLocator);
     }
 
     protected ImageResource() {}

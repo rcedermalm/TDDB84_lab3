@@ -50,7 +50,7 @@ public class SZAResource extends Resource implements Resource.Preloadable {
      *     resource.
      */
     public SZAResource(URI resourceLocator) {
-        super(resourceLocator);
+    	this.initializeResource(resourceLocator);
     }
 
     protected SZAResource() {}
